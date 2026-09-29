@@ -1,0 +1,118 @@
+# AeroSpace config — window management lives on Meh (ctrl-alt-shift) / Hyper (cmd-ctrl-alt-shift)
+# Voyager: Meh = hold E or I. Built-in keyboard: Meh = hold Caps Lock (Karabiner).
+# Option (alt) is intentionally left free for Neovim / zsh.
+config-version = 2
+start-at-login = true
+auto-reload-config = true
+persistent-workspaces = ['1', '2', '3', '4', '5']
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+accordion-padding = 30
+
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+[gaps]
+inner.horizontal = 10
+inner.vertical   = 10
+outer.left       = 10
+outer.right      = 10
+outer.top        = 10
+outer.bottom     = 10
+
+[mode.main.binding]
+# Focus: Meh + hjkl
+ctrl-alt-shift-h = 'focus left'
+ctrl-alt-shift-j = 'focus down'
+ctrl-alt-shift-k = 'focus up'
+ctrl-alt-shift-l = 'focus right'
+
+# Move window: Hyper + hjkl
+cmd-ctrl-alt-shift-h = 'move left'
+cmd-ctrl-alt-shift-j = 'move down'
+cmd-ctrl-alt-shift-k = 'move up'
+cmd-ctrl-alt-shift-l = 'move right'
+
+# Workspaces: Meh + 1..5, send window: Hyper + 1..5
+ctrl-alt-shift-1 = 'workspace 1'
+ctrl-alt-shift-2 = 'workspace 2'
+ctrl-alt-shift-3 = 'workspace 3'
+ctrl-alt-shift-4 = 'workspace 4'
+ctrl-alt-shift-5 = 'workspace 5'
+cmd-ctrl-alt-shift-1 = 'move-node-to-workspace 1'
+cmd-ctrl-alt-shift-2 = 'move-node-to-workspace 2'
+cmd-ctrl-alt-shift-3 = 'move-node-to-workspace 3'
+cmd-ctrl-alt-shift-4 = 'move-node-to-workspace 4'
+cmd-ctrl-alt-shift-5 = 'move-node-to-workspace 5'
+ctrl-alt-shift-tab = 'workspace-back-and-forth'
+cmd-ctrl-alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+# Layouts (never bind Hyper + comma/period: reserved by macOS sysdiagnose)
+ctrl-alt-shift-slash = 'layout tiles horizontal vertical'
+ctrl-alt-shift-comma = 'layout accordion horizontal vertical'
+ctrl-alt-shift-space = 'layout floating tiling'
+ctrl-alt-shift-f = 'fullscreen'
+
+ctrl-alt-shift-r = 'mode resize'
+ctrl-alt-shift-semicolon = 'mode service'
+
+[mode.resize.binding]
+h = 'resize width -100'
+l = 'resize width +100'
+j = 'resize height +100'
+k = 'resize height -100'
+equal = 'balance-sizes'
+esc = 'mode main'
+enter = 'mode main'
+
+# Service mode: Meh+; then a key
+[mode.service.binding]
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']
+f = ['layout floating tiling', 'mode main']
+# Nest focused window with a neighbor (e.g. two stacked terminals next to the editor)
+h = ['join-with left', 'mode main']
+j = ['join-with down', 'mode main']
+k = ['join-with up', 'mode main']
+l = ['join-with right', 'mode main']
+
+# Auto-assign apps
+[[on-window-detected]]
+if.app-id = 'com.microsoft.VSCode'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-id = 'com.mitchellh.ghostty'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Safari'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+run = 'move-node-to-workspace 3'
+
+[[on-window-detected]]
+if.app-id = 'ru.keepcoder.Telegram'
+run = 'move-node-to-workspace 4'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Notes'
+run = 'move-node-to-workspace 5'
+
+# Float utilities
+[[on-window-detected]]
+if.app-id = 'com.1password.1password'
+run = 'layout floating'
+
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = 'layout floating'
+
+[workspace-to-monitor-force-assignment]
+1 = ['Odyssey', 'main']
+2 = ['Odyssey', 'main']
+3 = ['Odyssey', 'main']
+4 = ['built-in', 'secondary']

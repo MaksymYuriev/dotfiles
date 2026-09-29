@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Шпаргалка: Voyager, AeroSpace, Raycast, Ghostty, Neovim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --ink: #1b2230;
+  --muted: #5b6577;
+  --line: #d9dee7;
+  --cap: #fbfcfd;
+  --cap-edge: #b9c1cf;
+  --meh: #6b4fbb;
+  --hyper: #0e7c86;
+  --cmd: #3b4a63;
+  --l1: #a86a00;
+  --l2: #2f7d4f;
+  --l3: #b4415a;
+  --lang: #1f6fb2;
+  --font-body: "Atkinson Hyperlegible", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-key: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141821; --surface: #1c212c; --ink: #e6e9ef; --muted: #9aa3b2; --line: #2c3342;
+    --cap: #232938; --cap-edge: #3a4356;
+    --meh: #a48cf0; --hyper: #3fc1c9; --cmd: #a9b6cc; --l1: #e5a93a; --l2: #6cc58f; --l3: #ef7f98; --lang: #6fb2ee;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141821; --surface: #1c212c; --ink: #e6e9ef; --muted: #9aa3b2; --line: #2c3342;
+  --cap: #232938; --cap-edge: #3a4356;
+  --meh: #a48cf0; --hyper: #3fc1c9; --cmd: #a9b6cc; --l1: #e5a93a; --l2: #6cc58f; --l3: #ef7f98; --lang: #6fb2ee;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { height: 100%; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 64px); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+.wrap { max-width: 1480px; margin: 0 auto; padding: 0 clamp(16px, 3vw, 40px) 64px; }
+
+/* header */
+header.top { padding: 40px 0 8px; }
+h1 { font-size: clamp(28px, 3.4vw, 44px); line-height: 1.1; margin: 0 0 10px; letter-spacing: -0.01em; }
+.lede { color: var(--muted); max-width: 70ch; margin: 0; }
+
+nav.jump {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  margin: 20px calc(-1 * clamp(16px, 3vw, 40px)) 0;
+  padding: 10px clamp(16px, 3vw, 40px);
+  display: flex; gap: 6px; overflow-x: auto; white-space: nowrap;
+}
+nav.jump a {
+  text-decoration: none; font-size: 15px; padding: 5px 11px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface);
+}
+nav.jump a:hover, nav.jump a:focus-visible { border-color: var(--ink); outline: none; }
+
+/* keycaps: the one loud element */
+kbd, .cap {
+  font-family: var(--font-key); font-size: 0.86em; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.9em; padding: 0.12em 0.45em; margin: 0 0.08em;
+  background: var(--cap); color: var(--ink);
+  border: 1px solid var(--cap-edge); border-bottom-width: 3px; border-radius: 6px;
+  line-height: 1.35; white-space: nowrap; vertical-align: 0.05em;
+}
+kbd.meh { color: var(--meh); border-color: var(--meh); }
+kbd.hyper { color: var(--hyper); border-color: var(--hyper); }
+kbd.l1 { color: var(--l1); border-color: var(--l1); }
+kbd.l2 { color: var(--l2); border-color: var(--l2); }
+kbd.l3 { color: var(--l3); border-color: var(--l3); }
+kbd.lang { color: var(--lang); border-color: var(--lang); }
+.plus { color: var(--muted); margin: 0 0.1em; }
+.then { color: var(--muted); margin: 0 0.3em; font-size: 0.9em; }
+
+/* sections */
+section { padding-top: 44px; }
+h2 { font-size: clamp(22px, 2.2vw, 28px); margin: 0 0 6px; line-height: 1.2; }
+.sub { color: var(--muted); margin: 0 0 18px; max-width: 75ch; }
+h3 { font-size: 18px; margin: 22px 0 8px; }
+
+.grid2 { display: grid; gap: 20px 28px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.panel > h3:first-child { margin-top: 0; }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 16px; }
+td { padding: 7px 10px 7px 0; border-top: 1px solid var(--line); vertical-align: top; }
+tr:first-child td { border-top: none; }
+td.combo { white-space: nowrap; width: 1%; padding-right: 18px; }
+td.note { color: var(--muted); font-size: 14.5px; }
+
+/* modifier map */
+.modmap td.mod { width: 1%; white-space: nowrap; padding-right: 18px; }
+.modmap td.who { font-weight: 700; }
+
+/* Voyager */
+.layer { margin-bottom: 8px; }
+.layer h3 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.layer h3 .how { font-weight: 400; color: var(--muted); font-size: 15px; }
+.board { display: flex; gap: clamp(14px, 3vw, 48px); flex-wrap: wrap; }
+.half { display: flex; flex-direction: column; gap: 6px; }
+.rows { display: grid; grid-template-columns: repeat(6, clamp(40px, 4.4vw, 58px)); gap: 5px; }
+.thumbs { display: flex; gap: 5px; margin-top: 6px; }
+.half.left .thumbs { justify-content: flex-end; }
+.key {
+  font-family: var(--font-key); font-size: 12px; line-height: 1.15; font-weight: 600;
+  aspect-ratio: 1 / 0.92; border: 1px solid var(--cap-edge); border-bottom-width: 3px; border-radius: 7px;
+  background: var(--cap); display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 2px; overflow: hidden; word-break: break-word;
+}
+.thumbs .key { width: clamp(52px, 5.6vw, 72px); }
+.key .hold { font-size: 10px; font-weight: 400; margin-top: 2px; }
+.key.empty { background: transparent; border-style: dashed; border-bottom-width: 1px; opacity: 0.45; }
+.key.held { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.key.c-meh { border-color: var(--meh); } .key.c-meh .hold { color: var(--meh); }
+.key.c-mod .hold { color: var(--cmd); }
+.key.c-l1 { border-color: var(--l1); } .key.c-l1 .hold { color: var(--l1); }
+.key.c-l2 { border-color: var(--l2); } .key.c-l2 .hold { color: var(--l2); }
+.key.c-l3 { border-color: var(--l3); } .key.c-l3 .hold { color: var(--l3); }
+.key.c-lang { border-color: var(--lang); color: var(--lang); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 14.5px; margin: 4px 0 16px; }
+
+.ws { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 6px 0 4px; }
+.ws div { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--surface); }
+.ws b { font-family: var(--font-key); font-size: 22px; display: block; color: var(--meh); }
+.ws span { font-size: 14.5px; color: var(--muted); }
+@media (max-width: 560px) { .ws { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.tip { border-left: 3px solid var(--meh); padding: 4px 0 4px 14px; margin: 14px 0 0; max-width: 80ch; }
+footer { color: var(--muted); font-size: 14.5px; padding-top: 48px; }
+
+@media print {
+  nav.jump { display: none; }
+  body { background: #fff; font-size: 12.5px; }
+  section { padding-top: 18px; break-inside: avoid-page; }
+  .panel, .layer { break-inside: avoid; }
+  .rows { grid-template-columns: repeat(6, 44px); }
+  .thumbs .key { width: 56px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Шпаргалка по сетапу</h1>
+  <p class="lede">Voyager, AeroSpace, Raycast, Ghostty і Neovim на одній сторінці. Кожен модифікатор має одне призначення, тож комбінації не перетинаються.</p>
+</header>
+
+<nav class="jump" aria-label="Розділи">
+  <a href="#mods">Модифікатори</a>
+  <a href="#voyager">Voyager</a>
+  <a href="#windows">Вікна</a>
+  <a href="#apps">Застосунки</a>
+  <a href="#text">Текст поза vim</a>
+  <a href="#terminal">Термінал</a>
+  <a href="#nvim">Neovim</a>
+  <a href="#rescue">Якщо щось зламалось</a>
+</nav>
+
+<!-- MODIFIERS -->
+<section id="mods">
+  <h2>Хто за що відповідає</h2>
+  <p class="sub">Головна ідея: <kbd>⌥</kbd> і <kbd>⌃</kbd> належать редактору й терміналу, вікнами керує Meh, застосунками <kbd>⌘</kbd>.</p>
+  <div class="panel scroll">
+    <table class="modmap">
+      <tr><td class="mod"><kbd class="meh">Meh</kbd> <span class="plus">=</span> <kbd>⌃⌥⇧</kbd></td><td class="who">Вікна й workspaces (AeroSpace), хоткеї застосунків (Raycast)</td><td class="note">Voyager: тримати <kbd>E</kbd> або <kbd>I</kbd>. MacBook: тримати <kbd>Caps</kbd></td></tr>
+      <tr><td class="mod"><kbd class="hyper">Hyper</kbd> <span class="plus">=</span> <kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>⌘</kbd></td><td class="who">Перемістити вікно (AeroSpace)</td><td class="note">Voyager: <kbd>E</kbd>/<kbd>I</kbd> + лівий thumb <kbd>⌫</kbd> (hold = ⌘). MacBook: <kbd>Caps</kbd> + <kbd>⌘</kbd></td></tr>
+      <tr><td class="mod"><kbd>⌘</kbd></td><td class="who">Застосунки й macOS</td><td class="note">Voyager: <kbd>D</kbd>, <kbd>K</kbd> або hold лівого thumb <kbd>⌫</kbd></td></tr>
+      <tr><td class="mod"><kbd>⌥</kbd> <kbd>⌃</kbd></td><td class="who">Neovim і zsh</td><td class="note">Voyager: <kbd>S</kbd>/<kbd>L</kbd> = ⌥, <kbd>A</kbd>/<kbd>;</kbd> = ⌃</td></tr>
+      <tr><td class="mod"><kbd class="lang">F18</kbd> <kbd class="lang">F19</kbd></td><td class="who">Мова: завжди EN / завжди UA</td><td class="note">Voyager: нижні кути. MacBook: тап лівого <kbd>⌘</kbd> = EN, правого <kbd>⌘</kbd> = UA</td></tr>
+    </table>
+  </div>
+  <p class="tip">Chordal Hold: hold на home row або E/I рахується, коли друга клавіша на іншій руці. Тому Meh для правої руки береш з <kbd>E</kbd>, для лівої з <kbd>I</kbd>. Та сама рука теж працює, але треба довше потримати.</p>
+</section>
+
+<!-- VOYAGER -->
+<section id="voyager">
+  <h2>Voyager</h2>
+  <p class="sub">Під клавішею дрібним підписом те, що вона робить при утриманні. Порожні клавіші на шарах пропускають дію з базового шару.</p>
+  <div class="legend">
+    <span><kbd class="meh">Meh</kbd> утримання</span>
+    <span><kbd>⌘ ⌥ ⌃ ⇧</kbd> home row mods</span>
+    <span><kbd class="l1">Шар 1</kbd> символи</span>
+    <span><kbd class="l2">Шар 2</kbd> навігація</span>
+    <span><kbd class="l3">Шар 3</kbd> медіа</span>
+    <span><kbd class="lang">F18/F19</kbd> мова</span>
+  </div>
+  <div id="layers" class="grid2"></div>
+  <p class="tip">Шар 1 легко вивести: верхній ряд це Shift+цифри з ряду вище (<kbd>!</kbd> під <kbd>1</kbd>), на home row дзеркальні дужки: відкривальні зліва, закривальні справа на тому самому пальці. Символи працюють тільки на EN, тож перед кодом <kbd class="lang">F18</kbd>.</p>
+</section>
+
+<!-- WINDOWS -->
+<section id="windows">
+  <h2>Вікна й workspaces</h2>
+  <p class="sub">Застосунки самі розкладаються по workspaces. Перемикання на застосунок через Raycast теж переводить на його workspace.</p>
+  <div class="ws">
+    <div><b>1</b><span>VS Code, код</span></div>
+    <div><b>2</b><span>Ghostty, агенти</span></div>
+    <div><b>3</b><span>Safari, Chrome</span></div>
+    <div><b>4</b><span>Telegram</span></div>
+    <div><b>5</b><span>Notes</span></div>
+  </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="panel scroll">
+      <h3>Щодня</h3>
+      <table>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>1</kbd>…<kbd>5</kbd></td><td>Перейти на workspace</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>Tab</kbd></td><td>Назад на попередній workspace</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd></td><td>Фокус на вікно ліворуч / вниз / вгору / праворуч</td></tr>
+        <tr><td class="combo"><kbd class="hyper">Hyper</kbd><span class="plus">+</span><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd></td><td>Переставити вікно в той бік</td></tr>
+        <tr><td class="combo"><kbd class="hyper">Hyper</kbd><span class="plus">+</span><kbd>1</kbd>…<kbd>5</kbd></td><td>Перекинути вікно на інший workspace</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>F</kbd></td><td>Вікно на весь екран і назад</td></tr>
+        <tr><td class="combo"><kbd class="hyper">Hyper</kbd><span class="plus">+</span><kbd>Tab</kbd></td><td>Перенести workspace на інший монітор</td></tr>
+      </table>
+    </div>
+    <div class="panel scroll">
+      <h3>Розкладка</h3>
+      <table>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>/</kbd></td><td>Плитки: горизонтально ↔ вертикально</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>,</kbd></td><td>Accordion: вікна стопкою, видно краї сусідніх</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>Space</kbd></td><td>Вікно floating ↔ tiling</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>R</kbd><span class="then">потім</span><kbd>h</kbd><kbd>l</kbd><kbd>j</kbd><kbd>k</kbd></td><td>Розмір: вужче / ширше / вище / нижче. <kbd>=</kbd> вирівняти, <kbd>Esc</kbd> вийти</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>;</kbd><span class="then">потім</span><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd></td><td>Об'єднати з сусідом у вкладений контейнер (два вікна одне над одним)</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>;</kbd><span class="then">потім</span><kbd>r</kbd></td><td>Скинути розкладку в один рівень</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:20px">
+    <div class="panel">
+      <h3>Між браузерами й вкладками</h3>
+      <table>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>S</kbd></td><td>Safari, звідки завгодно</td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>3</kbd><span class="then">потім</span><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>h</kbd>/<kbd>l</kbd></td><td>На workspace браузерів і між Safari та Chrome</td></tr>
+        <tr><td class="combo"><kbd class="l2">Tab</kbd><span class="plus">+</span><kbd>Prev</kbd>/<kbd>Next</kbd></td><td>Попередня / наступна вкладка в Chrome і VS Code (шар 2, під <kbd>M</kbd> і <kbd>,</kbd>)</td></tr>
+        <tr><td class="combo"><kbd>⌘⇧[</kbd> <kbd>⌘⇧]</kbd></td><td>Вкладки в Safari</td></tr>
+        <tr><td class="combo"><kbd>⌘1</kbd>…<kbd>⌘9</kbd></td><td>Вкладка за номером у будь-якому браузері</td></tr>
+      </table>
+    </div>
+    <div class="panel">
+      <h3>Типова розкладка на G9</h3>
+      <p style="margin:0 0 8px">Три колонки на одному workspace: nvim | Claude Code | dev server.</p>
+      <p style="margin:0" class="note">Відкрий три вікна Ghostty (<kbd>⌘N</kbd>). Фокус на крайнє праве, <kbd class="meh">Meh</kbd>+<kbd>;</kbd> потім <kbd>h</kbd>: два праві стануть одне над одним. Ширину підкрути через <kbd class="meh">Meh</kbd>+<kbd>R</kbd>.</p>
+    </div>
+  </div>
+  <p class="tip">Не використовуй зелену кнопку чи нативний fullscreen: такі вікна AeroSpace не бачить. Вкладки Ghostty теж не дружать з AeroSpace, замість них нові вікна.</p>
+</section>
+
+<!-- APPS -->
+<section id="apps">
+  <h2>Застосунки й Raycast</h2>
+  <div class="grid2">
+    <div class="panel scroll">
+      <h3>Прямі хоткеї</h3>
+      <table>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>S</kbd></td><td>Safari</td><td class="note">hold <kbd>I</kbd> + <kbd>s</kbd></td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>T</kbd></td><td>Ghostty</td><td class="note">hold <kbd>I</kbd> + <kbd>t</kbd></td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>C</kbd></td><td>VS Code</td><td class="note">hold <kbd>I</kbd> + <kbd>c</kbd></td></tr>
+        <tr><td class="combo"><kbd class="meh">Meh</kbd><span class="plus">+</span><kbd>N</kbd></td><td>Notes</td><td class="note">hold <kbd>E</kbd> + <kbd>n</kbd></td></tr>
+      </table>
+    </div>
+    <div class="panel scroll">
+      <h3>Raycast</h3>
+      <table>
+        <tr><td class="combo"><kbd>⌘Space</kbd></td><td>Будь-який застосунок, файл, команда</td></tr>
+        <tr><td class="combo"><kbd>⌘Space</kbd><span class="then">потім</span><code>aero</code></td><td>Відкрити конфіг AeroSpace (Quicklink)</td></tr>
+        <tr><td class="combo"><kbd>⌘Tab</kbd></td><td>Теж працює: AeroSpace перемкне workspace сам</td></tr>
+      </table>
+      <p class="note" style="margin:10px 0 0">Вільні літери для нових хоткеїв: будь-які, крім <kbd>h j k l f r</kbd>, цифр, <kbd>; , /</kbd>, <kbd>Tab</kbd> і <kbd>Space</kbd> (їх тримає AeroSpace).</p>
+    </div>
+  </div>
+</section>
+
+<!-- TEXT -->
+<section id="text">
+  <h2>Редагування тексту поза vim</h2>
+  <p class="sub">Браузер, Slack, поле prompt'у Claude Code. Тримаєш <kbd class="l2">Tab</kbd> правим thumb'ом: права рука стрілками, ліва додає модифікатори.</p>
+  <div class="grid2">
+    <div class="panel scroll">
+      <h3>Виділення й рух (hold <kbd class="l2">Tab</kbd>)</h3>
+      <table>
+        <tr><td class="combo"><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd></td><td>Стрілки ← ↓ ↑ →</td></tr>
+        <tr><td class="combo"><kbd>F</kbd><span class="plus">+</span><kbd>l</kbd></td><td>Виділити символ</td></tr>
+        <tr><td class="combo"><kbd>S</kbd><span class="plus">+</span><kbd>l</kbd></td><td>Стрибок на слово</td></tr>
+        <tr><td class="combo"><kbd>S</kbd><span class="plus">+</span><kbd>F</kbd><span class="plus">+</span><kbd>l</kbd></td><td>Виділити слово</td></tr>
+        <tr><td class="combo"><kbd>D</kbd><span class="plus">+</span><kbd>F</kbd><span class="plus">+</span><kbd>l</kbd></td><td>Виділити до кінця рядка</td></tr>
+        <tr><td class="combo"><kbd>U</kbd> <kbd>O</kbd> / <kbd>I</kbd> <kbd>P</kbd></td><td>Home, End / PgDn, PgUp</td></tr>
+      </table>
+    </div>
+    <div class="panel scroll">
+      <h3>Дії (hold <kbd class="l2">Tab</kbd>, ліва рука)</h3>
+      <table>
+        <tr><td class="combo"><kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> <kbd>R</kbd> <kbd>T</kbd></td><td>Undo, cut, copy, paste, redo</td></tr>
+        <tr><td class="combo"><kbd>Z</kbd></td><td>Виділити весь рядок</td></tr>
+        <tr><td class="combo"><kbd>X</kbd></td><td>Очистити рядок</td></tr>
+        <tr><td class="combo"><kbd>C</kbd></td><td>Видалити слово ліворуч</td></tr>
+        <tr><td class="combo"><kbd>V</kbd></td><td>Виділити все</td></tr>
+        <tr><td class="combo"><kbd>G</kbd></td><td>Видалити символ праворуч</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TERMINAL -->
+<section id="terminal">
+  <h2>Термінал</h2>
+  <div class="grid2">
+    <div class="panel scroll">
+      <h3>Ghostty</h3>
+      <table>
+        <tr><td class="combo"><kbd>⌘N</kbd></td><td>Нове вікно (AeroSpace поставить поруч)</td></tr>
+        <tr><td class="combo"><kbd>⌘D</kbd> / <kbd>⌘⇧D</kbd></td><td>Split праворуч / вниз</td></tr>
+        <tr><td class="combo"><kbd>⌘⌥</kbd><span class="plus">+</span><kbd>h</kbd><kbd>j</kbd><kbd>k</kbd><kbd>l</kbd></td><td>Між splits</td></tr>
+        <tr><td class="combo"><kbd>⌘⇧Enter</kbd></td><td>Розгорнути split і назад</td></tr>
+        <tr><td class="combo"><kbd>⌘F</kbd></td><td>Пошук по виводу</td></tr>
+        <tr><td class="combo"><kbd>⌘W</kbd></td><td>Закрити split або вікно</td></tr>
+        <tr><td class="combo"><kbd>⌘,</kbd> / <kbd>⌘⇧,</kbd></td><td>Відкрити / перечитати конфіг</td></tr>
+      </table>
+    </div>
+    <div class="panel scroll">
+      <h3>Shell і агенти</h3>
+      <table>
+        <tr><td class="combo"><code>z проєкт</code></td><td>Стрибок у папку за частиною назви (zoxide)</td></tr>
+        <tr><td class="combo"><kbd>⌃R</kbd></td><td>Пошук по історії команд (fzf)</td></tr>
+        <tr><td class="combo"><kbd>⌃T</kbd></td><td>Вставити шлях до файлу (fzf)</td></tr>
+        <tr><td class="combo"><kbd>⌥B</kbd> / <kbd>⌥F</kbd></td><td>Слово назад / вперед</td></tr>
+        <tr><td class="combo"><code>lg</code> · <code>ll</code></td><td>lazygit · список файлів з git-статусом</td></tr>
+        <tr><td class="combo"><kbd>⇧Enter</kbd></td><td>Claude Code: новий рядок у prompt</td></tr>
+        <tr><td class="combo"><kbd>⇧Tab</kbd></td><td>Claude Code: перемкнути режим дозволів</td></tr>
+        <tr><td class="combo"><kbd>Esc</kbd></td><td>Claude Code: зупинити поточну дію</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- NVIM -->
+<section id="nvim">
+  <h2>Neovim (LazyVim)</h2>
+  <p class="sub">Leader це <kbd>Space</kbd>. Натисни й почекай: which-key покаже всі дії. Українська розкладка в Normal mode працює завдяки langmap.</p>
+  <div class="grid2">
+    <div class="panel scroll">
+      <h3>Файли й пошук</h3>
+      <table>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>Space</kbd></td><td>Знайти файл</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>/</kbd></td><td>Grep по проєкту</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>e</kbd></td><td>Дерево файлів</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>,</kbd></td><td>Відкриті буфери</td></tr>
+        <tr><td class="combo"><kbd>⇧H</kbd> / <kbd>⇧L</kbd></td><td>Попередній / наступний буфер</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>b</kbd><kbd>d</kbd></td><td>Закрити буфер</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>g</kbd><kbd>g</kbd></td><td>lazygit</td></tr>
+      </table>
+    </div>
+    <div class="panel scroll">
+      <h3>Код</h3>
+      <table>
+        <tr><td class="combo"><kbd>gd</kbd> / <kbd>gr</kbd></td><td>Визначення / використання</td></tr>
+        <tr><td class="combo"><kbd>K</kbd></td><td>Тип і документація під курсором</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>c</kbd><kbd>a</kbd></td><td>Code action (імпорти, quick fix)</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>c</kbd><kbd>r</kbd></td><td>Перейменувати символ</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>c</kbd><kbd>f</kbd></td><td>Форматувати (Prettier)</td></tr>
+        <tr><td class="combo"><kbd>]d</kbd> / <kbd>[d</kbd></td><td>Наступна / попередня помилка</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>x</kbd><kbd>x</kbd></td><td>Список усіх помилок</td></tr>
+      </table>
+    </div>
+    <div class="panel scroll">
+      <h3>Редагування</h3>
+      <table>
+        <tr><td class="combo"><kbd>dd</kbd> · <kbd>yy</kbd> · <kbd>p</kbd></td><td>Видалити · скопіювати рядок · вставити</td></tr>
+        <tr><td class="combo"><kbd>ciw</kbd> · <kbd>ci"</kbd> · <kbd>ci(</kbd></td><td>Замінити слово · вміст лапок · вміст дужок</td></tr>
+        <tr><td class="combo"><kbd>V</kbd></td><td>Виділити рядок (далі <kbd>j</kbd>/<kbd>k</kbd>)</td></tr>
+        <tr><td class="combo"><kbd>⌥j</kbd> / <kbd>⌥k</kbd></td><td>Перемістити рядок вниз / вгору</td></tr>
+        <tr><td class="combo"><kbd>gcc</kbd></td><td>Закоментувати рядок</td></tr>
+        <tr><td class="combo"><kbd>u</kbd> / <kbd>⌃R</kbd> · <kbd>.</kbd></td><td>Undo / redo · повторити останню дію</td></tr>
+        <tr><td class="combo"><kbd>s</kbd></td><td>Flash: стрибок у будь-яке видиме місце за 2-3 символами</td></tr>
+      </table>
+    </div>
+    <div class="panel scroll">
+      <h3>Вікна й збереження</h3>
+      <table>
+        <tr><td class="combo"><kbd>⌃h</kbd><kbd>⌃j</kbd><kbd>⌃k</kbd><kbd>⌃l</kbd></td><td>Між вікнами Neovim</td></tr>
+        <tr><td class="combo"><kbd>Space</kbd><kbd>|</kbd> / <kbd>Space</kbd><kbd>-</kbd></td><td>Split праворуч / вниз</td></tr>
+        <tr><td class="combo"><kbd>⌃S</kbd></td><td>Зберегти</td></tr>
+        <tr><td class="combo"><code>:q</code> · <code>:qa</code></td><td>Закрити вікно · вийти</td></tr>
+        <tr><td class="combo"><code>:Mason</code> · <code>:Lazy</code></td><td>LSP-сервери · плагіни</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- RESCUE -->
+<section id="rescue">
+  <h2>Якщо щось зламалось</h2>
+  <div class="panel scroll">
+    <table>
+      <tr><td class="combo">Вікно зникло</td><td><code>aerospace list-windows --all</code> покаже, на якому workspace воно живе</td></tr>
+      <tr><td class="combo">Розкладка дивна</td><td><kbd class="meh">Meh</kbd>+<kbd>;</kbd> потім <kbd>r</kbd>. Вікно поводиться як плаваюче: <kbd class="meh">Meh</kbd>+<kbd>Space</kbd></td></tr>
+      <tr><td class="combo">Конфіг AeroSpace</td><td>Перечитується сам при збереженні. Вручну: <code>aerospace reload-config</code></td></tr>
+      <tr><td class="combo">Meh друкує літери</td><td>Потримай <kbd>E</kbd>/<kbd>I</kbd> трохи довше або бери з іншої руки, ніж літера</td></tr>
+      <tr><td class="combo">F18/F19 пищать</td><td>Karabiner → Devices: для Voyager увімкнено Modify events</td></tr>
+      <tr><td class="combo">vim не реагує на UA</td><td>Команди з <code>:</code> тільки латиницею. <kbd class="lang">F18</kbd> і повтори</td></tr>
+      <tr><td class="combo">Відкат прошивки</td><td>Keymapp → Flash → оригінальний <code>.bin</code> з Oryx</td></tr>
+    </table>
+  </div>
+</section>
+
+<footer>Конфіги: <code>~/.aerospace.toml</code>, <code>~/.config/ghostty/config</code>, <code>~/.config/karabiner/</code>, <code>~/.config/nvim/</code>. План Voyager і прошивка: <code>mac-setup/voyager/</code>.</footer>
+</div>
+
+<script>
+(function () {
+  // Key spec: "tap|hold". Class is derived from the hold label.
+  const layers = [
+    {
+      name: "Базовий шар", how: "",
+      L: [["Caps Word","1","2","3","4","5"],["Esc","Q","W","E|Meh","R","T"],["]|⇧","A|⌃","S|⌥","D|⌘","F|⇧","G"],["F18 EN","Z|Шар 3","X","C","V","B"]],
+      LT: ["Space","⌫|⌘"],
+      R: [["6","7","8","9","0","-"],["Y","U","I|Meh","O","P","["],["H","J|⇧","K|⌘","L|⌥",";|⌃","'|⇧"],["N","M",",",".","/|Шар 3","F19 UA"]],
+      RT: ["⏎|Шар 1","Tab|Шар 2"]
+    },
+    {
+      name: "Шар 1: символи", how: "тримати ⏎ правим thumb'ом", cls: "l1",
+      L: [["Esc","F1","F2","F3","F4","F5"],["`","!","@","#","$","%"],["~","<","{","[","(","="],["-","\\","|","+","_","?"]],
+      LT: ["",""],
+      R: [["F6","F7","F8","F9","F10","F11"],["^","&","*","(",")","F12"],["-",")","]","}",">","⌫"],[":",";","'","\"","/","⏎"]],
+      RT: ["#held","⇧"]
+    },
+    {
+      name: "Шар 2: навігація", how: "тримати Tab правим thumb'ом", cls: "l2",
+      L: [["RGB","Колір","Ефект","RGB ⏸","Яскр −","Яскр +"],["","⌘Z","⌘X","⌘C","⌘V","⇧⌘Z"],["","⌃","⌥","⌘","⇧","⌦"],["","Sel line","Clr line","⌥⌫","⌘A",""]],
+      LT: ["",""],
+      R: [["","","","","",""],["","Home","PgDn","End","PgUp","F12"],["←","↓","↑","→","⌥",""],["","Prev tab","Next tab","","",""]],
+      RT: ["","#held"]
+    },
+    {
+      name: "Шар 3: медіа й система", how: "тримати Z (для правої руки) або / (для лівої)", cls: "l3",
+      L: [["","","","","",""],["","","","","",""],["","","","⌘","~",""],["","#held","Power","Sleep","Lock",""]],
+      LT: ["",""],
+      R: [["","","","","",""],["","Яскр −","Яскр +","Гучн −","Гучн +",""],["","⏮","⏯","⏭","Mute",""],["","Mission Ctrl","","","#held",""]],
+      RT: ["",""]
+    }
+  ];
+
+  function holdClass(hold) {
+    if (hold === "Meh") return "c-meh";
+    if (hold === "Шар 1") return "c-l1";
+    if (hold === "Шар 2") return "c-l2";
+    if (hold === "Шар 3") return "c-l3";
+    return "c-mod";
+  }
+
+  function makeKey(spec, layerCls) {
+    const el = document.createElement("div");
+    el.className = "key";
+    if (spec === "") { el.classList.add("empty"); el.setAttribute("aria-hidden", "true"); return el; }
+    if (spec === "#held") { el.classList.add("held"); el.textContent = "тримаєш"; return el; }
+    const [tap, hold] = spec.split("|");
+    if (/^F1[89]/.test(tap)) el.classList.add("c-lang");
+    else if (layerCls) el.classList.add("c-" + layerCls);
+    const t = document.createElement("span");
+    t.textContent = tap;
+    el.appendChild(t);
+    if (hold) {
+      el.classList.add(holdClass(hold));
+      const h = document.createElement("span");
+      h.className = "hold";
+      h.textContent = hold;
+      el.appendChild(h);
+    }
+    return el;
+  }
+
+  function makeHalf(rows, thumbs, side, layerCls) {
+    const half = document.createElement("div");
+    half.className = "half " + side;
+    const grid = document.createElement("div");
+    grid.className = "rows";
+    rows.forEach(r => r.forEach(k => grid.appendChild(makeKey(k, layerCls))));
+    const th = document.createElement("div");
+    th.className = "thumbs";
+    thumbs.forEach(k => th.appendChild(makeKey(k, layerCls)));
+    half.appendChild(grid);
+    half.appendChild(th);
+    return half;
+  }
+
+  const host = document.getElementById("layers");
+  layers.forEach(l => {
+    const wrap = document.createElement("div");
+    wrap.className = "layer panel";
+    const h = document.createElement("h3");
+    h.textContent = l.name;
+    if (l.how) {
+      const how = document.createElement("span");
+      how.className = "how";
+      how.textContent = l.how;
+      h.appendChild(how);
+    }
+    const board = document.createElement("div");
+    board.className = "board";
+    board.appendChild(makeHalf(l.L, l.LT, "left", l.cls));
+    board.appendChild(makeHalf(l.R, l.RT, "right", l.cls));
+    wrap.appendChild(h);
+    wrap.appendChild(board);
+    host.appendChild(wrap);
+  });
+})();
+</script>
+</body>
+</html>

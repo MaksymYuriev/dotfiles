@@ -1,0 +1,21 @@
+# zsh config (managed by chezmoi)
+
+# --- dev setup ---
+HISTSIZE=100000
+SAVEHIST=100000
+setopt SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS
+
+BREW_PREFIX="$(brew --prefix)"
+source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+source <(fzf --zsh)
+eval "$(mise activate zsh)"
+eval "$(zoxide init zsh)"
+eval "$(starship init zsh)"
+
+alias ls="eza --group-directories-first"
+alias ll="eza -la --git --group-directories-first"
+alias lg="lazygit"
+alias oc="opencode"
+
+# Must be sourced last
+source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"

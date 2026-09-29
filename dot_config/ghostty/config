@@ -1,0 +1,25 @@
+font-family = JetBrainsMono Nerd Font
+font-size = 14
+theme = dark:Catppuccin Mocha,light:Catppuccin Latte
+
+window-padding-x = 10
+window-padding-y = 8
+window-save-state = always
+# No tabs with AeroSpace: new windows tile properly, tabs don't
+macos-titlebar-style = hidden
+keybind = cmd+t=new_window
+
+# Option as Meta for zsh word navigation and Neovim Alt mappings
+macos-option-as-alt = true
+
+copy-on-select = clipboard
+confirm-close-surface = false
+shell-integration-features = cursor,sudo,title
+
+# Splits (vim-like navigation)
+keybind = cmd+d=new_split:right
+keybind = cmd+shift+d=new_split:down
+keybind = cmd+alt+h=goto_split:left
+keybind = cmd+alt+l=goto_split:right
+keybind = cmd+alt+k=goto_split:up
+keybind = cmd+alt+j=goto_split:down

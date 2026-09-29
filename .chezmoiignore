@@ -1,0 +1,9 @@
+README.md
+LICENSE
+Brewfile
+keyboards
+keyboards/**
+docs
+docs/**
+vscode
+vscode/**

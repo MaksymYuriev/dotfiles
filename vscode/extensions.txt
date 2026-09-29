@@ -1,0 +1,4 @@
+# Minimal fallback set (main editor is Neovim)
+tamasfe.even-better-toml
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode

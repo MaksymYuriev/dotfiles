@@ -1,0 +1,8 @@
+#!/bin/bash
+# Extensions list hash: {{ include "vscode/extensions.txt" | sha256sum }}
+set -euo pipefail
+eval "$(/opt/homebrew/bin/brew shellenv)"
+command -v code >/dev/null || { echo "VS Code CLI not found, skipping"; exit 0; }
+grep -v '^#' "{{ .chezmoi.sourceDir }}/vscode/extensions.txt" | grep -v '^$' | while read -r ext; do
+  code --install-extension "$ext" --force
+done

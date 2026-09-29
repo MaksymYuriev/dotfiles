@@ -1,0 +1,43 @@
+{
+  "title": "Maksim: language keys + Caps Lock as Meh (all keyboards except ZSA)",
+  "rules": [
+    {
+      "description": "F18 -> English, F19 -> Ukrainian (idempotent input source keys)",
+      "manipulators": [
+        { "type": "basic", "from": { "key_code": "f18" }, "to": [{ "select_input_source": { "language": "^en$" } }] },
+        { "type": "basic", "from": { "key_code": "f19" }, "to": [{ "select_input_source": { "language": "^uk$" } }] }
+      ]
+    },
+    {
+      "description": "Non-ZSA keyboards: left Cmd tap -> English, right Cmd tap -> Ukrainian",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": { "key_code": "left_command", "modifiers": { "optional": ["any"] } },
+          "to": [{ "key_code": "left_command" }],
+          "to_if_alone": [{ "select_input_source": { "language": "^en$" } }],
+          "conditions": [{ "type": "device_unless", "identifiers": [{ "vendor_id": 12951 }] }]
+        },
+        {
+          "type": "basic",
+          "from": { "key_code": "right_command", "modifiers": { "optional": ["any"] } },
+          "to": [{ "key_code": "right_command" }],
+          "to_if_alone": [{ "select_input_source": { "language": "^uk$" } }],
+          "conditions": [{ "type": "device_unless", "identifiers": [{ "vendor_id": 12951 }] }]
+        }
+      ]
+    },
+    {
+      "description": "Non-ZSA keyboards: Caps Lock -> Meh (hold) / Escape (tap)",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": { "key_code": "caps_lock", "modifiers": { "optional": ["any"] } },
+          "to": [{ "key_code": "left_shift", "modifiers": ["left_control", "left_option"] }],
+          "to_if_alone": [{ "key_code": "escape" }],
+          "conditions": [{ "type": "device_unless", "identifiers": [{ "vendor_id": 12951 }] }]
+        }
+      ]
+    }
+  ]
+}

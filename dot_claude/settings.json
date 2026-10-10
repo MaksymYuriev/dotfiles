@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git grep *)",
+      "Bash(git worktree list *)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm check-types)",
+      "Bash(pnpm check-types *)",
+      "Bash(pnpm test)",
+      "Bash(pnpm test *)",
+      "Bash(glab mr view *)",
+      "Bash(glab mr diff *)",
+      "Bash(glab ci status *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr checks *)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)"
+    ],
+    "ask": [
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm install *)",
+      "Bash(npm install *)",
+      "Bash(npx *)",
+      "Bash(curl *)",
+      "Bash(gh pr create *)",
+      "Bash(glab mr create *)"
+    ]
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "cleanupPeriodDays": 90,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/verify/collect.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/verify/verify-stop.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/verify/verify-stop.sh",
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  },
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  }
+}

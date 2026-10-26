@@ -5,6 +5,9 @@ HISTSIZE=100000
 SAVEHIST=100000
 setopt SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS
 
+# emacs keys on the prompt (EDITOR=nvim would otherwise switch zsh to vi mode); matches Claude Code's prompt
+bindkey -e
+
 BREW_PREFIX="$(brew --prefix)"
 source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 source <(fzf --zsh)

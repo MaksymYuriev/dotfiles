@@ -1,6 +1,7 @@
 # Cheatsheet  ·  q close  ·  j/k or arrows scroll  ·  / search  ·  Extended sections below
 
 Meh = hold Caps (built-in kbd) / hold E or I (Voyager).  Hyper = Meh + ⌘.  tmux prefix = Ctrl-b.
+Voyager: this cheatsheet = hold Tab + outer key of the Esc row.
 
 ## AeroSpace (windows)
 `Meh+h/j/k/l`        focus left / down / up / right

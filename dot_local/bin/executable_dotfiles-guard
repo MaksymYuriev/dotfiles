@@ -1,0 +1,64 @@
+#!/bin/bash
+# dotfiles-guard staged | push <remote-name> <remote-url> — keep private content out of the public dotfiles repo.
+# Called by .git/hooks/pre-commit and pre-push in ~/.local/share/chezmoi. The private term list lives outside the repo.
+set -u
+TERMS="${DOTFILES_GUARD_TERMS:-$HOME/.config/dotfiles-guard/terms.txt}"
+EXPECTED_REMOTE='git@github.com:MaksymYuriev/dotfiles.git'
+EMPTY_TREE=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+ZERO=0000000000000000000000000000000000000000
+
+bad_path='(^|/)(vault|career|interviews)(/|$)|\.(pdf|docx?)$|(^|/)\.env([./]|$)|\.pem$|(^|/)id_(rsa|ed25519|ecdsa)'
+bad_content='-----BEGIN [A-Z ]*PRIVATE KEY-----|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9_-]{20,}|AKIA[0-9A-Z]{16}'
+
+if [[ ! -r $TERMS ]]; then echo "dotfiles-guard: term list $TERMS missing, refusing (fail closed)" >&2; exit 1; fi
+tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+grep -vE '^[[:space:]]*(#|$)' "$TERMS" > "$tmp/terms"
+if [[ ! -s $tmp/terms ]]; then echo "dotfiles-guard: term list is empty, refusing (fail closed)" >&2; exit 1; fi
+
+fail=0
+report() { echo "dotfiles-guard: $*" >&2; fail=1; }
+
+# added lines of a diff, prefixed with the file they belong to
+added_lines() { awk '/^\+\+\+ b\//{f=substr($0,7)} /^\+[^+]/{print f": "substr($0,2)}'; }
+
+# check <names-file> <added-lines-file> [messages-file]   (tests the CONTENT of hit, never a pipeline exit status)
+check() {
+  local hit
+  hit=$(grep -E -e "$bad_path" "$1" || true)
+  if [[ -n $hit ]]; then report "private-looking path(s):"; echo "$hit" | sed 's/^/    /' >&2; fi
+  hit=$(grep -iFf "$tmp/terms" "$1" || true)
+  if [[ -n $hit ]]; then report "path contains a private term:"; echo "$hit" | sed 's/^/    /' >&2; fi
+  hit=$(grep -iFf "$tmp/terms" "$2" | cut -c1-140 | head -5 || true)
+  if [[ -n $hit ]]; then report "added lines contain a private term:"; echo "$hit" | sed 's/^/    /' >&2; fi
+  hit=$(grep -E -e "$bad_content" "$2" | cut -c1-60 | head -3 || true)
+  if [[ -n $hit ]]; then report "possible secret in added lines:"; echo "$hit" | sed 's/^/    /' >&2; fi
+  if [[ -n ${3:-} ]]; then
+    hit=$(grep -iFf "$tmp/terms" "$3" | head -3 || true)
+    if [[ -n $hit ]]; then report "commit message contains a private term:"; echo "$hit" | sed 's/^/    /' >&2; fi
+  fi
+}
+
+case ${1:-} in
+  staged)
+    git diff --cached --name-only --diff-filter=ACMR > "$tmp/names"
+    git diff --cached -U0 --no-color --diff-filter=ACMR | added_lines > "$tmp/added"
+    check "$tmp/names" "$tmp/added"
+    ;;
+  push)
+    if [[ ${3:-} != "$EXPECTED_REMOTE" ]]; then report "push target is '${3:-?}', expected $EXPECTED_REMOTE"; fi
+    while read -r _ lsha _ rsha; do
+      [[ -n ${lsha:-} && $lsha != "$ZERO" ]] || continue
+      base=$rsha; [[ $rsha != "$ZERO" ]] || base=$EMPTY_TREE
+      git diff --name-only --diff-filter=ACMR "$base" "$lsha" > "$tmp/names"
+      git diff -U0 --no-color --diff-filter=ACMR "$base" "$lsha" | added_lines > "$tmp/added"
+      if [[ $rsha == "$ZERO" ]]; then git log --format=%B "$lsha" > "$tmp/msgs"; else git log --format=%B "$rsha..$lsha" > "$tmp/msgs"; fi
+      check "$tmp/names" "$tmp/added" "$tmp/msgs"
+    done
+    ;;
+  *) echo "usage: dotfiles-guard staged | push <remote> <url>" >&2; exit 2 ;;
+esac
+
+if [[ $fail -ne 0 ]]; then
+  echo "dotfiles-guard: BLOCKED. Fix the cause; do not use --no-verify and do not edit the term list to get past this." >&2
+fi
+exit $fail

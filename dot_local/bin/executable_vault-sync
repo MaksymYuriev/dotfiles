@@ -1,0 +1,15 @@
+#!/bin/bash
+# vault-sync — push committed vault notes to the private vault remote (pull --rebase first).
+# Never force-pushes and never commits for you: uncommitted notes stay as they are.
+set -euo pipefail
+v="$HOME/vault"
+expected='git@github.com:MaksymYuriev/vault.git'
+
+url=$(git -C "$v" remote get-url origin)
+[[ $url == "$expected" ]] || { echo "vault-sync: origin is $url, expected $expected" >&2; exit 1; }
+[[ $(git -C "$v" branch --show-current) == main ]] || { echo "vault-sync: vault is not on main" >&2; exit 1; }
+
+dirty=$(git -C "$v" status --porcelain | wc -l | tr -d ' ')
+git -C "$v" pull --rebase --autostash origin main
+git -C "$v" push origin main
+echo "vault-sync: pushed; $dirty uncommitted file(s) left as they were"

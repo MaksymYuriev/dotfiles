@@ -47,6 +47,8 @@ If nothing durable came out of the session, say so and stop. Noise in the vault 
 git -C ~/vault add -A && git -C ~/vault commit -m "retro: <one-line summary of what was learned>"
 ```
 
+Then push to the vault's private remote with `vault-sync`. If it fails (Touch ID, rebase conflict, unexpected remote), say so in the report instead of retrying with other flags.
+
 ## 5. Report
 
 Tell the user in 2-5 bullets:

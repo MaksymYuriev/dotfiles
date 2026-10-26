@@ -56,7 +56,7 @@ Scripts that mutate shared data follow the `ops-script` skill.
 
 ## Git
 
-- Commit or push only when I ask, and never force-push or rewrite shared history.
+- Commit or push only when I ask (exceptions: the dotfiles repo and the vault, see their sections), and never force-push or rewrite shared history.
 - Commits: small, Conventional Commits, imperative mood, lowercase subject, no AI attribution trailers.
 - Do multi-step work in a dedicated worktree. I switch branches in my main checkout, and agent work has landed on the wrong branch there. One worktree = one task = one session.
 - Before committing, run the project formatter on every touched file except lock files.
@@ -65,6 +65,7 @@ Scripts that mutate shared data follow the `ops-script` skill.
 ## Knowledge
 
 - `~/vault` is my knowledge base (notes, monthly decision logs). Before non-trivial work on a project it covers, read its notes. Read `~/vault/AGENTS.md` before writing there, and write only through the `retro` skill or when I ask.
+- You may sync the vault to its own private remote with `vault-sync` (the `retro` skill runs it after committing). It pulls with rebase, never force-pushes and never commits for you. Vault content goes to that remote only, never into another repo.
 - Vault notes, docs and CLAUDE.md files are dated hints. Re-verify volatile facts in code; when they disagree, the code wins and the note gets a superseded line.
 - Auto-memory holds short, durable rules for one project. Investigations and cross-project knowledge go to the vault.
 - When the same mistake happens twice, propose turning it into a lint rule, hook, skill or instruction line.
@@ -82,4 +83,6 @@ Scripts that mutate shared data follow the `ops-script` skill.
 
 ## Dotfiles
 
-`~/.claude/` (this file, `rules/`, `settings.json`, `hooks/`, `skills/`) is managed by chezmoi in a public repo (`~/.local/share/chezmoi`). After editing a managed file, run `chezmoi re-add <the files you edited>` (`chezmoi add` for new files) and tell me which files changed. A bare `chezmoi re-add` syncs every drifted file, including unrelated local edits, into the public repo. I commit and push that repo myself; keep secrets and employer-internal details out of it.
+`~/.claude/` (this file, `rules/`, `settings.json`, `hooks/`, `skills/`) is managed by chezmoi in a public repo (`~/.local/share/chezmoi`). After editing a managed file, run `chezmoi re-add <the files you edited>` (`chezmoi add` for new files). A bare `chezmoi re-add` syncs every drifted file, including unrelated local edits, into the public repo, so always name the files.
+
+You maintain that repo's remote yourself: when the edit is done, stage only the files you changed, commit (Conventional Commits) and push, then tell me which files changed and the commit. Unrelated drift stays out; mention it. The repo is public, and `dotfiles-guard` (pre-commit and pre-push hooks in the chezmoi source repo) blocks private content, secrets and pushes to any other remote. If it blocks, fix the cause. Never use `--no-verify`, never change the hooks or the guard's term list to get past it, and never put `~/vault`, career or interview material, other personal notes, employer-internal details or secrets under chezmoi. If a push or signing prompt hangs on Touch ID, tell me.

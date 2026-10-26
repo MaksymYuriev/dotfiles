@@ -1,0 +1,18 @@
+#!/bin/bash
+# cheat — show ~/.config/cheatsheet/cheatsheet.md in a tmux popup (or inline when there is no tmux client)
+PATH="/opt/homebrew/bin:$PATH"
+file="$HOME/.config/cheatsheet/cheatsheet.md"
+
+view() { bat --style=plain --color=always --language=markdown "$file" | less -Ri; }
+
+if [[ ${1:-} == --inner ]]; then view; exit; fi
+
+client=$(tmux list-clients -F '#{client_activity} #{client_name}' 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+if [[ -n $client ]]; then
+  open -a Ghostty
+  tmux display-popup -c "$client" -E -w 92% -h 92% -T ' cheatsheet · q to close ' "$HOME/.local/bin/cheat --inner"
+elif [[ -t 1 ]]; then
+  view
+else
+  echo "cheat: no tmux client and no terminal" >&2; exit 1
+fi

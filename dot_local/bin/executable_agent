@@ -1,0 +1,38 @@
+#!/bin/bash
+# agent [-w] [-s session] [-m model] <task> [base-ref] — claude in a tmux window
+#   agent research              new session <repo>-research in the current directory (several agents can share one worktree)
+#   agent -s career kata03      window "kata03" in session "career" (session is created if missing)
+#   agent -m sonnet keys        run claude with --model sonnet (cheaper, e.g. for tutor windows)
+#   agent -w feat-x [base-ref]  also creates a git worktree + branch feat-x and runs there
+set -euo pipefail
+wt_mode= session= model=
+while [[ ${1:-} == -* ]]; do
+  case $1 in
+    -w) wt_mode=1; shift ;;
+    -s) session=${2:?-s needs a session name}; shift 2 ;;
+    -m) model=${2:?-m needs a model}; shift 2 ;;
+    *) echo "unknown flag $1" >&2; exit 1 ;;
+  esac
+done
+task=${1:?usage: agent [-w] [-s session] [-m model] <task> [base-ref]}
+base=${2:-HEAD}
+
+cmd=claude${model:+ --model $model}
+
+if root=$(git rev-parse --show-toplevel 2>/dev/null); then repo=$(basename "$root"); else root=$PWD; repo=$(basename "$PWD"); fi
+dir=$PWD
+if [[ -n $wt_mode ]]; then dir="$(dirname "$root")/$repo.worktrees/$task"; fi
+[[ -n $session ]] || session=$(tr './:' '---' <<<"$repo-$task")
+
+if [[ -n $wt_mode && ! -d $dir ]]; then git -C "$root" worktree add -b "$task" "$dir" "$base"; fi
+
+if ! tmux has-session -t "=$session" 2>/dev/null; then
+  tmux new-session -d -s "$session" -n "$task" -c "$dir"
+  tmux send-keys -t "=$session:$task" "$cmd" Enter
+elif ! tmux list-windows -t "=$session" -F '#W' | grep -qxF "$task"; then
+  tmux new-window -d -t "=$session:" -n "$task" -c "$dir"
+  tmux send-keys -t "=$session:$task" "$cmd" Enter
+fi
+
+tmux select-window -t "=$session:$task"
+if [[ -n ${TMUX:-} ]]; then tmux switch-client -t "=$session"; else tmux attach -t "=$session"; fi

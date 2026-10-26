@@ -1,0 +1,5 @@
+#!/bin/bash
+# Fuzzy-switch over all windows of all sessions; ● marks agents waiting for input
+target=$(tmux list-windows -a -F '#{session_name}:#{window_index} #{window_name} #{?@needs-input,●,}' | fzf --reverse --prompt='window> ' | awk '{print $1}')
+[[ -n $target ]] || exit 0
+tmux select-window -t "$target" && tmux switch-client -t "${target%%:*}"

@@ -1,0 +1,14 @@
+#!/bin/bash
+# Status-bar line: sessions; current one bold, others get ● when any of their windows waits for input
+tmux list-windows -a -F '#{session_name}	#{session_attached}	#{?@needs-input,1,0}' | awk -F'\t' '
+  !($1 in seen) { seen[$1] = 1; order[++n] = $1 }
+  $2 > 0 { cur[$1] = 1 }
+  $3 == 1 { flag[$1] = 1 }
+  END {
+    for (i = 1; i <= n; i++) {
+      s = order[i]
+      if (cur[s]) printf "#[fg=blue,bold]%s#[default] ", s
+      else if (flag[s]) printf "#[fg=yellow]● #[fg=brightblack]%s ", s
+      else printf "#[fg=brightblack]%s ", s
+    }
+  }'

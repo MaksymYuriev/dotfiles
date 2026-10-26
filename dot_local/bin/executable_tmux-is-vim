@@ -1,0 +1,6 @@
+#!/bin/bash
+# tmux-is-vim <pane_tty> — exit 0 if (n)vim runs in that tty (and is not stopped); used by Ctrl-h/j/k/l in ~/.tmux.conf
+ps -o state= -o comm= -t "${1#/dev/}" | awk '
+  { n = split($2, p, "/"); b = p[n] }
+  $1 !~ /^[TXZ]/ && b ~ /^g?(view|n?vim?x?)(diff)?$/ { f = 1 }
+  END { exit !f }'

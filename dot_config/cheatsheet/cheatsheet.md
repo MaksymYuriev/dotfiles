@@ -121,3 +121,10 @@ Toggles & misc
   `Space ul` line numbers · `uw` wrap · `us` spelling · `ud` diagnostics · `uh` inlay hints · `uz` zen
   `Ctrl-/`           terminal             `Space l`  Lazy (plugins)   `Space n`  notification history
   `Space qs` / `ql`  restore session / last session
+
+## Extended: Voyager
+  `Meh`              hold E or I               `Hyper`  Meh + hold Backspace (thumb ⌘)
+  `Ctrl`             hold A or ;               `Alt`  S or L     `⌘`  D or K
+  `` ` `` / `~`      hold Enter + outer key of the Esc row   (Sym layer)
+  this cheatsheet    hold Tab + outer key of the Esc row     (Nav layer)
+  `=`                hold Enter + G   (no `=` on the base layer, e.g. in AeroSpace resize mode)

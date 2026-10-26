@@ -1,6 +1,6 @@
 # Voyager layout: план модифікації (v2)
 
-Оригінальний лейаут в Oryx: https://configure.zsa.io/voyager/layouts/ZlKnv/latest/0 (firmware v25)
+Лейаут в Oryx: https://configure.zsa.io/voyager/layouts/ZlKnv/latest/0 (firmware v25). **Джерело правди — Oryx**: зміни з цього плану перенесені туди вручну, прошивається `.bin` з Oryx. Source у `v2/` — план і довідка, його не прошиваємо.
 
 ## Мета
 
@@ -17,10 +17,10 @@
 | `⌘` | застосунки, macOS | D / K / hold Backspace | як є |
 | `⌥`, `⌃` | тільки Neovim і zsh | S / L, A / ; | як є |
 | Meh (`⌃⌥⇧`) | AeroSpace: фокус, workspaces, layouts | hold E або I | hold Caps Lock (Karabiner) |
-| Hyper (Meh + `⌘`) | AeroSpace: перемістити вікно | E + D або I + K | Caps + `⌘` |
+| Hyper (Meh + `⌘`) | AeroSpace: перемістити вікно | E або I + hold Backspace (thumb `⌘`) | Caps + `⌘` |
 | F18 / F19 | мова EN / UA | нижні кути base layer | tap лівий / правий `⌘` (Karabiner) |
 
-Ергономіка: E (ліва) + `hjkl` (права) для фокусу, I (права) + `1-5` (ліва) для workspaces, тобто завжди cross-hand.
+Ергономіка: E (ліва) + `hjkl` (права) для фокусу, I (права) + `1-5` (ліва) для workspaces, тобто завжди cross-hand. Hyper не через E + D чи I + K: це один середній палець на двох клавішах однієї колонки.
 
 ## Зміни по шарах
 
@@ -68,35 +68,37 @@ Home:     —        ⌃        ⌥        ⌘        ⇧        ⌦
 
 Без змін.
 
-### Chordal Hold
+### Chordal Hold (план, у прошивці не увімкнено)
+
+Зараз в Oryx увімкнено **Permissive Hold**, Chordal Hold немає. Мод спрацьовує, якщо тримаєш його й тапаєш іншу клавішу (press + release), з будь-якої руки. Тому `Ctrl-b` = `A` + `B` працює. Нижче опис на випадок, якщо Chordal Hold колись увімкнемо (у source `v2/config.h` він є).
 
 Hold на tap-hold клавіші зараховується, тільки якщо наступна клавіша на іншій руці. Винятки, які працюють з будь-якою рукою: усі 4 thumb-клавіші, зовнішні Shift (`]` і `'`), `Z` і `/` (шар 3).
 
 Точніше (звірено з тестами `chordal_hold/default` у гілці `firmware25`): без `PERMISSIVE_HOLD` мод стає hold тільки після tapping term (≈160–200 ms). Якщо до цього натиснути клавішу тієї ж руки, мод одразу стає тапом. Якщо тримати мод довше за term, hold спрацює і з клавішею тієї ж руки.
 
-Наслідок: `⌘C`, `⌘S`, `⌘Z` лівою рукою роби через thumb-`⌘` (hold Backspace) або правий `K`, а не через `D`. tmux prefix `Ctrl-b`: `;` + `B`.
+Наслідок з Chordal Hold: `⌘C`, `⌘S`, `⌘Z` лівою рукою треба робити через thumb-`⌘` (hold Backspace) або правий `K`, а не через `D`. tmux prefix `Ctrl-b`: `;` + `B` або `A` з паузою.
 
 ## Tradeoffs
 
 - 1–2 тижні переучування шару символів.
 - Символи шару 1 працюють тільки на EN-розкладці: QMK шле позиції клавіш, а не символи. Перед кодом F18.
 - `⌘`-макроси шару 2 розраховані на macOS. На Windows через KVM вони стануть `Win+`-комбо.
-- Прошивка з цієї папки розходиться з Oryx: зміни в Oryx GUI після цього треба або повторити вручну, або вести лейаут тільки з source.
+- Oryx і source у `v2/` ведуться вручну паралельно: зміну в Oryx варто дзеркалити в `v2/keymap.c` і в цей README, інакше вони розійдуться.
 
 ## Файли
 
 - `original/keymap.c` — оригінальний source з Oryx, без змін.
-- `original/voyager_original_rebuilt.bin` — оригінал, перезібраний з source. Точна копія для відкату — `.bin` з Oryx (Download this layout).
-- `v2/` — модифікований source (`keymap.c`, `config.h`, `rules.mk`, `keymap.json`) і готова прошивка `voyager_v2.bin`.
-- `build.sh` — перезібрати v2 з source (ZSA QMK fork, гілка `firmware25`).
+- `original/voyager_original_rebuilt.bin` — оригінал, перезібраний з source.
+- `v2/` — модифікований source (`keymap.c`, `config.h`, `rules.mk`, `keymap.json`) і `voyager_v2.bin`, зібраний з нього. Відрізняється від Oryx (Chordal Hold замість Permissive Hold) і новіших змін не містить.
+- `build.sh` — перезібрати v2 з source (ZSA QMK fork, гілка `firmware25`; потрібен `arm-none-eabi-gcc`).
 
 ## Як прошити
 
-1. Спершу завантаж оригінальний `.bin` з Oryx (Download this layout) і поклади поруч як точку відкату.
-2. Keymapp → Flash → обери `v2/voyager_v2.bin` → натисни reset на Voyager (отвір знизу), коли Keymapp попросить.
-3. Відкат: те саме з оригінальним `.bin`.
+1. Oryx → Compile → Download this layout.
+2. Keymapp → Flash → обери завантажений `.bin` → натисни reset на Voyager (отвір знизу), коли Keymapp попросить. `.bin` не відкривай подвійним кліком: macOS спробує розпакувати його як архів і покаже помилку.
+3. Відкат: попередня ревізія в історії Oryx, далі ті самі кроки.
 
-## Як перенести в Oryx (якщо хочеш редагувати в GUI)
+## Як перенести в Oryx (зроблено, крім Chordal Hold)
 
 Oryx не імпортує QMK source, тому зміни в Oryx вносяться вручну за розділом "Зміни по шарах":
 
@@ -106,7 +108,7 @@ Oryx не імпортує QMK source, тому зміни в Oryx вносят�
 
 ## Налаштування на маку (частина плану)
 
-- `../karabiner/voyager-mac.json`: F18/F19 → EN/UA, Caps Lock → Meh, tap `⌘` → мова на вбудованій клавіатурі.
-- `../aerospace/aerospace.toml`: бінди на Meh/Hyper, `⌥` вільний.
+- `~/.config/karabiner/karabiner.json`: F18/F19 → EN/UA (будь-яка клавіатура); Caps Lock → Meh і tap `⌘` → мова тільки на вбудованій.
+- `~/.aerospace.toml`: бінди на Meh/Hyper, `⌥` вільний.
 - System Settings → Keyboard → Keyboard Shortcuts → Input Sources: вимкнути `⌃Space`.
-- Neovim: `langmap` для української в `~/.config/nvim/lua/config/options.lua`.
+- Neovim: `langmap` для української в `~/.config/nvim/lua/config/options.lua` (ще не зроблено).

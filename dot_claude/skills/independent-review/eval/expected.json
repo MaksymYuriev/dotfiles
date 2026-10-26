@@ -1,0 +1,18 @@
+[
+  {"case": "no-clear-timeout", "kind": "seeded", "file": "src/useSearch.ts", "anchor": "setTimeout(() => {", "summary_regex": "clear|cleanup|debounc", "expect": "fix",
+   "note": "previous timer is never cleared, so every keystroke still fires a request and requests fire after unmount"},
+  {"case": "falsy-zero-delay", "kind": "seeded", "file": "src/useSearch.ts", "anchor": "const wait = delay || 300;", "summary_regex": "zero|falsy|\\b0\\b", "expect": "fix",
+   "note": "delay 0 becomes 300, breaking criterion 2"},
+  {"case": "enter-key-case", "kind": "seeded", "file": "src/SearchInput.tsx", "anchor": "if (e.key === \"enter\") onSubmit(query);", "summary_regex": "enter", "expect": "fix",
+   "note": "KeyboardEvent.key is \"Enter\"; the condition never matches"},
+  {"case": "removed-encoding", "kind": "seeded", "file": "src/api/client.ts", "anchor": "res = await fetch(`/api/search?q=${query}`);", "summary_regex": "encod", "expect": "human:in-out-of-scope-change",
+   "note": "encodeURIComponent dropped inside the out-of-scope client rewrite; reverting that rewrite is the human's call"},
+  {"case": "response-race", "kind": "seeded", "file": "src/useSearch.ts", "anchor": "fetchResults(query).then((data) => {", "summary_regex": "order|stale|race|overwrit", "expect": "human",
+   "note": "an older response that resolves later overwrites newer results"},
+  {"case": "retry-out-of-scope", "kind": "seeded", "file": "src/api/client.ts", "anchor": "for (let attempt = 0; attempt < 3; attempt++) {", "summary_regex": "retr", "expect": "human:scope",
+   "note": "retry loop is not in the brief, which puts the API client out of scope"},
+  {"case": "legacy-slice", "kind": "seeded", "file": "src/useSearch.ts", "anchor": "setResults(data.items.slice(0, limit - 1));", "summary_regex": "slice|limit|one fewer|off-by-one", "expect": "human:outside-diff",
+   "note": "off-by-one that predates the change; the change only re-indents the line"},
+  {"case": "decoy-items", "kind": "decoy", "file": "src/useSearch.ts", "summary_regex": "items.*(undefined|null)|(undefined|null).*items", "expect": "not-fix",
+   "note": "looks like a possible undefined deref, but fetchResults guarantees items with ?? []"}
+]

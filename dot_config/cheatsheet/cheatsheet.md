@@ -90,6 +90,10 @@ Vim basics
   `ciw` `ci"`        change word / text inside quotes            `.`  repeat last change
   `v` `V` `Ctrl-v`   visual: char / line / block                 `/text`  search, `n` / `N` next / prev
   `:w` `:q` `:wq`    save / quit / both       `Space qq`  quit all
+Macros  (the same edit on several similar lines: do it once by hand, replay on the rest)
+  `qq` … `q`         record into register q; finish the edit with `j` so the replay moves to the next line
+  `3@q` / `@@`       replay 3 times / replay the last macro again
+  `f"` `cf;` `D`     jump to a char · change up to and including a char · delete to line end (no `5s`: `s` = flash)
 Find & search  (Space s…)
   `Space sg`         grep                `Space sw`  grep word under cursor   `Space sr`  search & replace
   `Space ff` / `fr`  files / recent      `Space fg`  git files   `Space fp`  projects
@@ -113,6 +117,8 @@ Code
   `]d` / `[d`        next / prev diagnostic        `]e` / `[e`  next / prev error
   `Space cm`         Mason (LSP / tool installer)  `Space xx`  diagnostics list (Trouble)
   `Alt-j` / `Alt-k`  move line down / up           `gco` / `gcO`  comment below / above
+  `Space cM`         add all missing imports (TS)  `Space co`  organize imports (drop unused, sort)
+  `Space ca`         code action on the cursor (e.g. "Add import from ...")
 Git
   `Space gg`         lazygit             `Space gs`  status      `Space gd`  diff hunks
   `Space gb`         blame line          `Space gl`  log         `Space gf`  current file history

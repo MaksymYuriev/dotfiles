@@ -26,7 +26,7 @@ Voyager: this cheatsheet = hold Tab + outer key of the Esc row.
 
 ## Neovim (LazyVim, leader = Space; press Space and wait for the which-key menu)
 `Space Space`        find files            `Space /`  grep in project
-`Space e`            file explorer         `Space ,`  switch buffer
+`Space e` / `E`      file explorer toggle (project root / cwd)     `Space ,`  switch buffer
 `H` / `L`            prev / next buffer    `Space bd` close buffer
 `Ctrl-h/j/k/l`       move between splits and tmux panes     `Space -` / `|`  split below / right
 `Space wd`           close split           `Space wm`  zoom split / back       `Space bb`  other buffer
@@ -119,6 +119,11 @@ Code
   `Alt-j` / `Alt-k`  move line down / up           `gco` / `gcO`  comment below / above
   `Space cM`         add all missing imports (TS)  `Space co`  organize imports (drop unused, sort)
   `Space ca`         code action on the cursor (e.g. "Add import from ...")
+Run tests / shell commands  (katas: run from ~/Dev/career/katas)
+  tmux `prefix "`, then `pnpm vitest 02`   watch mode below the editor, reruns on every save; `Ctrl-j/k` between them
+  `Ctrl-/`           floating terminal: `pnpm test 02`; `Ctrl-/` again hides / shows it
+  `:split | term pnpm test 02`   one-off run in a terminal split (close with `Space wd`)
+  `:!cmd`            avoid for tests: output only lands in the message history (`Space snh`)
 Git
   `Space gg`         lazygit             `Space gs`  status      `Space gd`  diff hunks
   `Space gb`         blame line          `Space gl`  log         `Space gf`  current file history

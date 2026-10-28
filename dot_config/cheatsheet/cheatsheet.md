@@ -114,6 +114,7 @@ Buffers / windows / tabs
   `Space Tab Tab`    new tab             `Space Tab ]` / `[`  next / prev tab
 Code
   `K`  hover · `gd` definition  (when an LSP is attached)       `Space cd`  line diagnostics
+  `K` on a variable  its type (`K` again enters the popup)   `gy`  go to its type definition   `Ctrl-o`  jump back
   `]d` / `[d`        next / prev diagnostic        `]e` / `[e`  next / prev error
   `Space cm`         Mason (LSP / tool installer)  `Space xx`  diagnostics list (Trouble)
   `Alt-j` / `Alt-k`  move line down / up           `gco` / `gcO`  comment below / above

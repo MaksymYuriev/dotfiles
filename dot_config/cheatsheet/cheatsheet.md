@@ -120,6 +120,16 @@ Code
   `Alt-j` / `Alt-k`  move line down / up           `gco` / `gcO`  comment below / above
   `Space cM`         add all missing imports (TS)  `Space co`  organize imports (drop unused, sort)
   `Space ca`         code action on the cursor (e.g. "Add import from ...")
+Code navigation  (new codebase: follow control and data flow)
+  `gai` / `gao`      who calls this function / what it calls (incoming / outgoing calls)
+  `gd` / `gD`        definition / source definition (the implementation, not a .d.ts or re-export)
+  `gr`               all references: where a value or type is read, passed, changed
+  `gI`               implementations of an interface or abstract method
+  `]]` / `[[`        next / prev use of the symbol under the cursor in this file    `gR`  who imports this file
+  `Space ss` / `sS`  symbols in this file (outline) / symbol by name in the project
+  `Space cS`         references + definitions in a Trouble side panel (stays open while you walk them)
+  `Ctrl-o` / `Ctrl-i`   back / forward through jumps (gd, gr, search, gg, G ...)
+  `''`               back to the line before the last jump (e.g. after gg); two backticks = the exact spot
 Run tests / shell commands  (katas: run from ~/Dev/career/katas)
   tmux `prefix "`, then `pnpm vitest 02`   watch mode below the editor, reruns on every save; `Ctrl-j/k` between them
   `Ctrl-/`           floating terminal: `pnpm test 02`; `Ctrl-/` again hides / shows it
